@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STOCKWISE | Smart Inventory & Stock Optimization</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><div class="brand-mark">S</div><div><b>STOCKWISE</b><small>INVENTORY INTELLIGENCE</small></div></div>
+      <div class="side-label">WORKSPACE</div>
+      <nav id="navigation">
+        <button class="nav-link active" data-page="dashboard"><span>▦</span> Overview</button>
+        <button class="nav-link" data-page="inventory"><span>▤</span> Inventory <i id="navProductCount">0</i></button>
+        <button class="nav-link" data-page="movement"><span>⇄</span> Stock movements</button>
+        <button class="nav-link" data-page="forecast"><span>⌁</span> Demand forecast</button>
+        <button class="nav-link" data-page="analytics"><span>◫</span> ABC & analytics</button>
+        <button class="nav-link" data-page="suppliers"><span>♧</span> Suppliers</button>
+        <button class="nav-link" data-page="expiry"><span>◷</span> Expiry control</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="help-card"><div class="help-icon">✦</div><b>Smarter stock decisions</b><p>Turn inventory data into clear actions.</p></div>
+        <button class="nav-link" id="themeToggle"><span>◐</span> Toggle dark mode</button>
+        <div class="profile"><div class="avatar">AD</div><div><b>Administrator</b><small>Workspace owner</small></div><span class="online-dot"></span></div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu">☰</button>
+        <div class="crumb">Workspace <span>/</span> <b id="pageCrumb">Overview</b></div>
+        <div class="top-actions"><div class="live-status"><span></span> System operational</div><button class="icon-btn" id="exportTop" title="Export CSV">⇩</button><button class="primary-btn" id="quickAdd">＋ Add product</button></div>
+      </header>
+
+      <section class="page active" id="page-dashboard">
+        <div class="welcome-row"><div><div class="eyebrow">MONDAY, INVENTORY COMMAND CENTER</div><h1>Good day, Administrator <span>✦</span></h1><p class="muted">Here’s what’s happening across your inventory today.</p></div><div class="date-chip" id="todayDate"></div></div>
+        <div class="stat-grid">
+          <article class="stat-card"><div class="stat-top"><span>Total inventory value</span><span class="stat-icon blue">₹</span></div><strong id="kpiValue">₹0</strong><div class="stat-foot"><span class="positive">● Live valuation</span><span>Across all products</span></div></article>
+          <article class="stat-card"><div class="stat-top"><span>Active products</span><span class="stat-icon violet">▤</span></div><strong id="kpiProducts">0</strong><div class="stat-foot"><span class="positive">● Catalog health</span><span>Unique SKUs</span></div></article>
+          <article class="stat-card"><div class="stat-top"><span>Low stock alerts</span><span class="stat-icon orange">!</span></div><strong id="kpiLow">0</strong><div class="stat-foot"><span class="warning-text">Needs attention</span><span>At/below minimum</span></div></article>
+          <article class="stat-card"><div class="stat-top"><span>Total units on hand</span><span class="stat-icon green">▥</span></div><strong id="kpiUnits">0</strong><div class="stat-foot"><span class="positive">● Stock position</span><span>All locations</span></div></article>
+        </div>
+        <div class="dashboard-grid">
+          <article class="panel chart-panel"><div class="panel-head"><div><h3>Inventory value</h3><p>Capital distribution by category</p></div><span class="pill">BY CATEGORY</span></div><div class="chart-wrap"><canvas id="categoryChart"></canvas></div></article>
+          <article class="panel"><div class="panel-head"><div><h3>Stock health</h3><p>Current inventory status</p></div><span class="pill">LIVE</span></div><div class="health-chart"><canvas id="healthChart"></canvas><div class="donut-center"><b id="healthyPct">0%</b><small>Healthy</small></div></div><div class="legend"><span><i class="dot green-dot"></i> Healthy</span><span><i class="dot orange-dot"></i> Low stock</span><span><i class="dot red-dot"></i> Out of stock</span></div></article>
+          <article class="panel wide-panel"><div class="panel-head"><div><h3>Priority actions</h3><p>Recommendations generated from your stock data</p></div><button class="text-btn" data-go="forecast">View forecast →</button></div><div id="priorityList" class="priority-list"></div></article>
+          <article class="panel"><div class="panel-head"><div><h3>Recent movements</h3><p>Latest stock activity</p></div><button class="text-btn" data-go="movement">View all →</button></div><div id="recentMoves" class="compact-list"></div></article>
+        </div>
+        <div class="panel warehouse-panel"><div class="warehouse-copy"><span class="eyebrow">WAREHOUSE VISUAL</span><h2>Your stockroom, at a glance.</h2><p>A visual snapshot of a connected, organized warehouse. Use the live metrics above to decide what to replenish, review, or move.</p><button class="secondary-btn" data-go="inventory">Explore inventory →</button></div><div class="warehouse-scene" aria-label="Illustrated 3D warehouse shelves"><div class="warehouse-light"></div><div class="shelf shelf-one"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="shelf shelf-two"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="floor-grid"></div><div class="warehouse-label">STOCKWISE LOGISTICS</div></div></div>
+      </section>
+
+      <section class="page" id="page-inventory">
+        <div class="page-heading"><div><div class="eyebrow">PRODUCT CATALOG</div><h1>Inventory management</h1><p class="muted">Manage products, quantities, costs and reorder levels.</p></div><button class="primary-btn" id="addProduct">＋ Add product</button></div>
+        <div class="toolbar"><div class="search-box">⌕ <input id="inventorySearch" placeholder="Search product, SKU or supplier..." /></div><select id="categoryFilter"><option value="">All categories</option></select><select id="stockFilter"><option value="">All stock levels</option><option value="healthy">Healthy</option><option value="low">Low stock</option><option value="out">Out of stock</option></select><button class="secondary-btn" id="inventoryExport">Export CSV ↓</button></div>
+        <div class="panel table-panel"><div class="table-meta"><b>Product list</b><span id="inventoryCount">0 products</span></div><div class="table-scroll"><table><thead><tr><th>PRODUCT</th><th>CATEGORY</th><th>UNIT COST</th><th>ON HAND</th><th>MIN. LEVEL</th><th>SUPPLIER</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody id="inventoryRows"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-movement">
+        <div class="page-heading"><div><div class="eyebrow">AUDIT TRAIL</div><h1>Stock movements</h1><p class="muted">Every stock-in and stock-out transaction, recorded in one place.</p></div><button class="primary-btn" id="newMovement">＋ Record movement</button></div>
+        <div class="stat-grid small-stats"><article class="stat-card"><div class="stat-top"><span>Stock received</span><span class="stat-icon green">↓</span></div><strong id="movementIn">0</strong><div class="stat-foot">Units in this workspace</div></article><article class="stat-card"><div class="stat-top"><span>Stock dispatched</span><span class="stat-icon orange">↑</span></div><strong id="movementOut">0</strong><div class="stat-foot">Units in this workspace</div></article><article class="stat-card"><div class="stat-top"><span>Total transactions</span><span class="stat-icon blue">⇄</span></div><strong id="movementTotal">0</strong><div class="stat-foot">Recorded movements</div></article></div>
+        <div class="panel table-panel"><div class="table-meta"><b>Movement history</b><span>Newest first</span></div><div class="table-scroll"><table><thead><tr><th>DATE & TIME</th><th>PRODUCT</th><th>TYPE</th><th>QUANTITY</th><th>REFERENCE / NOTE</th><th>STOCK AFTER</th></tr></thead><tbody id="movementRows"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-forecast">
+        <div class="page-heading"><div><div class="eyebrow">PREDICTIVE DECISION SUPPORT</div><h1>Demand & reorder forecast</h1><p class="muted">Simple, explainable estimates based on recorded stock-out history.</p></div><span class="pill">7-DAY MOVING AVERAGE</span></div>
+        <div class="notice">Forecasts are estimates, not guarantees. The model uses recorded stock-out transactions; add consistent movement history for more useful recommendations.</div>
+        <div class="panel table-panel"><div class="table-meta"><b>Replenishment recommendations</b><span>20% safety buffer included</span></div><div class="table-scroll"><table><thead><tr><th>PRODUCT</th><th>AVAILABLE</th><th>AVG. DAILY DEMAND</th><th>EST. DAYS LEFT</th><th>REORDER POINT</th><th>SUGGESTED ORDER</th><th>DECISION</th></tr></thead><tbody id="forecastRows"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-analytics">
+        <div class="page-heading"><div><div class="eyebrow">INVENTORY INTELLIGENCE</div><h1>ABC & stock analytics</h1><p class="muted">Understand which products account for the most inventory value.</p></div><button class="secondary-btn" id="printAnalytics">Print report ↗</button></div>
+        <div class="analytics-grid"><article class="panel"><div class="panel-head"><div><h3>ABC classification</h3><p>Based on cumulative inventory value</p></div></div><div class="abc-summary" id="abcSummary"></div></article><article class="panel"><div class="panel-head"><div><h3>Top inventory value</h3><p>Highest value products</p></div></div><div class="chart-wrap"><canvas id="topChart"></canvas></div></article></div>
+        <div class="panel table-panel"><div class="table-meta"><b>Product value ranking</b><span>ABC: A ≈ first 80%, B ≈ next 15%, C ≈ final 5%</span></div><div class="table-scroll"><table><thead><tr><th>RANK</th><th>PRODUCT</th><th>QTY</th><th>UNIT COST</th><th>STOCK VALUE</th><th>CUMULATIVE VALUE</th><th>CLASS</th></tr></thead><tbody id="abcRows"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-suppliers">
+        <div class="page-heading"><div><div class="eyebrow">PROCUREMENT DIRECTORY</div><h1>Supplier management</h1><p class="muted">Keep supplier contacts connected to your products.</p></div><button class="primary-btn" id="addSupplier">＋ Add supplier</button></div>
+        <div class="supplier-grid" id="supplierGrid"></div>
+      </section>
+
+      <section class="page" id="page-expiry">
+        <div class="page-heading"><div><div class="eyebrow">QUALITY & RISK CONTROL</div><h1>Expiry date management</h1><p class="muted">Track dated stock and prioritize items approaching expiry.</p></div><button class="secondary-btn" id="expiryExport">Export list ↓</button></div>
+        <div class="notice">Expiry tracking is optional per product. Add an expiry date when creating or editing products that require date control.</div>
+        <div class="stat-grid small-stats"><article class="stat-card"><div class="stat-top"><span>Expired</span><span class="stat-icon red">!</span></div><strong id="expiredCount">0</strong></article><article class="stat-card"><div class="stat-top"><span>Expiring in 30 days</span><span class="stat-icon orange">◷</span></div><strong id="soonCount">0</strong></article><article class="stat-card"><div class="stat-top"><span>Tracked products</span><span class="stat-icon blue">▤</span></div><strong id="trackedCount">0</strong></article></div>
+        <div class="panel table-panel"><div class="table-meta"><b>Expiry watchlist</b><span>Earliest date first</span></div><div class="table-scroll"><table><thead><tr><th>PRODUCT</th><th>SKU</th><th>QUANTITY</th><th>EXPIRY DATE</th><th>DAYS REMAINING</th><th>STATUS</th></tr></thead><tbody id="expiryRows"></tbody></table></div></div>
+      </section>
+      <footer>STOCKWISE <span>•</span> Smart Inventory & Stock Optimization <span class="footer-right">Administrator workspace · Demo build</span></footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop"><div class="modal" id="modal"><div class="modal-head"><div><span class="eyebrow" id="modalEyebrow">PRODUCT DETAILS</span><h2 id="modalTitle">Add product</h2></div><button class="close-btn" id="modalClose">×</button></div><div id="modalBody"></div></div></div>
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>

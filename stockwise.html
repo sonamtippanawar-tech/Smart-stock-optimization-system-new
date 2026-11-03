@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STOCKWISE | Smart Inventory & Stock Optimization</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<style>
+:root{--navy:#142b4a;--navy2:#203d61;--ink:#172334;--muted:#718096;--line:#e5eaf0;--bg:#f5f7fa;--white:#fff;--soft:#edf2f7;--red:#b54747;--amber:#a66b16;--green:#267451}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,Segoe UI,Arial,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#f7f9fc,#e9eef5)}
+.login-card{background:#fff;width:min(410px,100%);padding:34px;border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 50px #142b4a12}
+.brand-mark{height:42px;width:42px;border-radius:10px;background:var(--navy);color:white;display:grid;place-items:center;font-weight:800;font-size:22px}
+.brandline{display:flex;align-items:center;gap:12px;margin-bottom:24px}.brandline strong{font-size:19px;letter-spacing:1px}.brandline small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.3px}
+input,select{border:1px solid #d9e0e8;border-radius:8px;padding:10px 11px;background:#fff;color:var(--ink);width:100%;outline:none}input:focus,select:focus{border-color:#56789e;box-shadow:0 0 0 3px #dce7f2}
+label{display:block;font-size:12px;color:#526174;font-weight:650;margin:11px 0 5px}
+.btn{border:1px solid var(--line);border-radius:8px;padding:9px 13px;background:#fff;color:var(--ink);font-weight:650}.btn.primary{background:var(--navy);color:white;border-color:var(--navy)}.btn:hover{filter:brightness(.97)}.btn.danger{color:var(--red);border-color:#e8caca}.btn.small{padding:6px 9px;font-size:12px}
+.app{display:flex;min-height:100vh}.sidebar{width:238px;background:#fff;border-right:1px solid var(--line);padding:22px 14px;position:fixed;inset:0 auto 0 0;overflow:auto;z-index:5}
+.brand{display:flex;align-items:center;gap:11px;padding:0 9px 25px}.brand .brand-mark{height:38px;width:38px}.brand strong{font-size:16px;letter-spacing:1px}.brand small{display:block;font-size:9px;color:var(--muted);letter-spacing:1.1px}
+.nav-title{font-size:10px;color:#98a3b2;font-weight:800;letter-spacing:1.4px;padding:10px 12px}
+.nav button{width:100%;border:0;background:transparent;text-align:left;padding:11px 12px;border-radius:8px;color:#526174;margin:2px 0;font-weight:600}.nav button.active,.nav button:hover{background:#edf2f8;color:var(--navy)}.nav button span{display:inline-block;width:24px;color:inherit}
+.sidebar-foot{position:sticky;top:90%;margin:25px 7px 0;padding:12px;border:1px solid var(--line);border-radius:9px;color:var(--muted);font-size:11px}
+.main{margin-left:238px;width:calc(100% - 238px);padding:25px 30px 40px}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}.crumb{color:var(--muted);font-size:12px}.admin{display:flex;align-items:center;gap:10px}.avatar{width:34px;height:34px;border-radius:50%;background:#e8eef5;color:var(--navy);display:grid;place-items:center;font-weight:800}
+h1{font-size:25px;margin:0 0 5px;color:#18283c}h2{font-size:16px;margin:0 0 14px}h3{font-size:14px;margin:0 0 8px}.sub{color:var(--muted);margin:0 0 22px}.page{display:none}.page.active{display:block}
+.grid{display:grid;gap:15px}.kpis{grid-template-columns:repeat(4,minmax(0,1fr));margin:20px 0}.two{grid-template-columns:1.35fr 1fr}.three{grid-template-columns:repeat(3,1fr)}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:17px;min-width:0}.kpi-label{font-size:12px;color:var(--muted);font-weight:600}.kpi-value{font-size:25px;font-weight:750;margin:7px 0 2px;color:var(--navy)}.kpi-note{font-size:11px;color:var(--muted)}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:15px 0}.toolbar .left,.toolbar .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.toolbar input{width:230px}.toolbar select{width:auto;min-width:130px}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;white-space:nowrap}th,td{text-align:left;padding:11px 10px;border-bottom:1px solid #edf0f4;font-size:12px}th{color:#718096;font-size:10px;text-transform:uppercase;letter-spacing:.7px;background:#fafbfd}td strong{font-size:12px}.status{display:inline-block;padding:4px 8px;border-radius:20px;font-size:10px;font-weight:750}.ok{background:#e9f4ee;color:var(--green)}.low{background:#fff3df;color:var(--amber)}.out{background:#faeaea;color:var(--red)}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0 12px}.form-grid .full{grid-column:1/-1}.muted{color:var(--muted)}.empty{text-align:center;color:var(--muted);padding:28px}
+.notice{padding:12px 14px;border-radius:8px;background:#f1f5f9;border:1px solid var(--line);margin:10px 0;color:#526174;font-size:12px}.alert{border-left:3px solid var(--amber);background:#fffaf0;padding:10px 12px;margin:8px 0;border-radius:5px;font-size:12px}
+.modal-back{position:fixed;inset:0;background:#0d1c2d77;display:none;align-items:center;justify-content:center;padding:16px;z-index:20}.modal-back.show{display:flex}.modal{background:#fff;border-radius:13px;padding:22px;width:min(540px,100%);max-height:90vh;overflow:auto;box-shadow:0 20px 60px #0003}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+canvas{max-width:100%}.chartbox{height:260px;position:relative}.chartbox.small{height:220px}
+#qrArea{display:flex;justify-content:center;padding:15px}#barcodeArea{display:flex;justify-content:center;padding:12px}#barcodeArea svg{max-width:100%}
+.footer-note{font-size:11px;color:#8793a2;margin-top:20px}
+@media(max-width:900px){.sidebar{width:205px}.main{margin-left:205px;width:calc(100% - 205px);padding:20px}.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
+@media(max-width:650px){.sidebar{position:static;width:100%;height:auto;padding:12px;border-right:0;border-bottom:1px solid var(--line)}.sidebar .brand{padding-bottom:8px}.nav{display:flex;overflow:auto;gap:4px}.nav-title,.sidebar-foot{display:none}.nav button{white-space:nowrap;width:auto;padding:8px 10px}.app{display:block}.main{margin:0;width:100%;padding:17px}.topbar{margin-bottom:18px}.three{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.toolbar input{width:100%}}
+</style>
+</head>
+<body>
+<section id="loginScreen" class="login-wrap">
+ <div class="login-card">
+  <div class="brandline"><div class="brand-mark">S</div><div><strong>STOCKWISE</strong><small>SMART STOCK OPTIMIZATION</small></div></div>
+  <h2>Administrator sign in</h2><p class="muted">Sign in to manage inventory and review business insights.</p>
+  <label>Administrator PIN</label><input id="pinInput" type="password" placeholder="Enter PIN" inputmode="numeric">
+  <button class="btn primary" style="width:100%;margin-top:15px" onclick="login()">Sign in</button>
+  <p id="loginError" style="color:#b54747;font-size:12px"></p>
+  <div class="notice">Demo access PIN: <b>1234</b>. Change it in the code before presenting. This front-end demo login is not production-grade security.</div>
+ </div>
+</section>
+<div id="app" class="app hidden">
+<aside class="sidebar">
+ <div class="brand"><div class="brand-mark">S</div><div><strong>STOCKWISE</strong><small>SMART STOCK OPTIMIZATION</small></div></div>
+ <div class="nav-title">ADMIN WORKSPACE</div>
+ <nav class="nav">
+  <button class="active" data-page="dashboard" onclick="go('dashboard',this)"><span>▦</span>Dashboard</button>
+  <button data-page="inventory" onclick="go('inventory',this)"><span>▤</span>Inventory</button>
+  <button data-page="transactions" onclick="go('transactions',this)"><span>↕</span>Stock movement</button>
+  <button data-page="forecast" onclick="go('forecast',this)"><span>⌁</span>Demand forecast</button>
+  <button data-page="analytics" onclick="go('analytics',this)"><span>▥</span>Data analytics</button>
+  <button data-page="review" onclick="go('review',this)"><span>✓</span>Overall review</button>
+  <button data-page="codes" onclick="go('codes',this)"><span>▦</span>Barcode & QR</button>
+ </nav>
+ <div class="sidebar-foot">Administrator access only<br><b>StockWise • Local demo</b></div>
+</aside>
+<main class="main">
+ <div class="topbar"><div class="crumb">StockWise / <span id="crumb">Dashboard</span></div><div class="admin"><span class="muted">Administrator</span><div class="avatar">A</div><button class="btn small" onclick="logout()">Log out</button></div></div>
+ <section id="dashboard" class="page active">
+  <h1>Good day, Administrator</h1><p class="sub">A clear view of your stock, movement and decisions.</p>
+  <div class="grid kpis">
+   <div class="card"><div class="kpi-label">Total products</div><div class="kpi-value" id="kProducts">0</div><div class="kpi-note">Unique product records</div></div>
+   <div class="card"><div class="kpi-label">Inventory value</div><div class="kpi-value" id="kValue">₹0</div><div class="kpi-note">Current quantity × unit cost</div></div>
+   <div class="card"><div class="kpi-label">Low stock items</div><div class="kpi-value" id="kLow">0</div><div class="kpi-note">At or below minimum level</div></div>
+   <div class="card"><div class="kpi-label">Units in stock</div><div class="kpi-value" id="kUnits">0</div><div class="kpi-note">Across all products</div></div>
+  </div>
+  <div class="grid two">
+   <div class="card"><h2>Inventory value by category</h2><div class="chartbox"><canvas id="categoryChart"></canvas></div></div>
+   <div class="card"><h2>Stock health</h2><div class="chartbox"><canvas id="healthChart"></canvas></div></div>
+  </div>
+  <div class="card" style="margin-top:15px"><h2>Needs attention</h2><div id="dashboardAlerts"></div></div>
+ </section>
+ <section id="inventory" class="page">
+  <h1>Inventory</h1><p class="sub">Add, search, edit and maintain product records.</p>
+  <div class="toolbar"><div class="left"><input id="searchBox" placeholder="Search by product, code or category" oninput="renderInventory()"><select id="stockFilter" onchange="renderInventory()"><option value="all">All stock levels</option><option value="low">Low stock</option><option value="healthy">Healthy stock</option><option value="out">Out of stock</option></select></div><div class="right"><button class="btn" onclick="exportCSV()">Export CSV</button><button class="btn primary" onclick="openProduct()">+ Add product</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>Product</th><th>Code</th><th>Category</th><th>Qty</th><th>Min. level</th><th>Unit cost</th><th>Stock value</th><th>Status</th><th>Actions</th></tr></thead><tbody id="productRows"></tbody></table></div></div>
+ </section>
+ <section id="transactions" class="page">
+  <h1>Stock movement</h1><p class="sub">Record goods received or issued. Every entry updates the available quantity.</p>
+  <div class="grid two">
+   <div class="card"><h2>Record movement</h2><div class="form-grid">
+    <div class="full"><label>Product</label><select id="txProduct"></select></div>
+    <div><label>Movement type</label><select id="txType"><option value="in">Stock received (IN)</option><option value="out">Stock issued (OUT)</option></select></div>
+    <div><label>Quantity</label><input id="txQty" type="number" min="1" placeholder="e.g. 20"></div>
+    <div class="full"><label>Supplier / reference (optional)</label><input id="txRef" placeholder="Supplier name or invoice number"></div>
+   </div><button class="btn primary" style="margin-top:15px" onclick="recordMovement()">Save movement</button><p id="txMessage" class="muted"></p></div>
+   <div class="card"><h2>Movement summary</h2><div class="grid three"><div><div class="kpi-label">Stock IN</div><div class="kpi-value" id="sumIn">0</div></div><div><div class="kpi-label">Stock OUT</div><div class="kpi-value" id="sumOut">0</div></div><div><div class="kpi-label">Entries</div><div class="kpi-value" id="sumTx">0</div></div></div><div class="notice">Tip: Always record a movement when goods arrive or leave. This keeps the stock history reliable.</div></div>
+  </div>
+  <div class="card" style="margin-top:15px"><h2>Recent stock history</h2><div class="table-wrap"><table><thead><tr><th>Date</th><th>Product</th><th>Type</th><th>Quantity</th><th>Reference</th></tr></thead><tbody id="txRows"></tbody></table></div></div>
+ </section>
+ <section id="forecast" class="page">
+  <h1>Demand forecast</h1><p class="sub">A simple moving-average estimate based on recorded stock-out history.</p>
+  <div class="notice">Forecasts are estimates, not guarantees. More accurate results require consistent dated sales / stock-out records over several weeks.</div>
+  <div class="toolbar"><div class="left"><label style="margin:0">Product</label><select id="forecastProduct" onchange="renderForecast()"></select></div></div>
+  <div class="grid two"><div class="card"><h2>Recent stock-out movement</h2><div class="chartbox"><canvas id="forecastChart"></canvas></div></div><div class="card"><h2>Forecast recommendation</h2><div id="forecastInsight"></div></div></div>
+ </section>
+ <section id="analytics" class="page">
+  <h1>Data analytics</h1><p class="sub">Use inventory data to understand value, stock distribution and product priorities.</p>
+  <div class="grid two"><div class="card"><h2>Top products by inventory value</h2><div class="chartbox"><canvas id="valueChart"></canvas></div></div><div class="card"><h2>ABC classification</h2><div class="chartbox"><canvas id="abcChart"></canvas></div></div></div>
+  <div class="card" style="margin-top:15px"><h2>Data-driven decision list</h2><div id="decisionList"></div></div>
+ </section>
+ <section id="review" class="page">
+  <h1>Overall review</h1><p class="sub">A concise administrator review of current inventory performance.</p>
+  <div id="reviewContent"></div>
+  <div class="toolbar"><div class="left"><button class="btn" onclick="window.print()">Print review</button><button class="btn" onclick="exportCSV()">Download inventory CSV</button></div></div>
+ </section>
+ <section id="codes" class="page">
+  <h1>Barcode & QR code</h1><p class="sub">Generate a product label for quick identification. A scanner can read the generated code.</p>
+  <div class="grid two"><div class="card"><h2>Choose a product</h2><label>Product</label><select id="codeProduct" onchange="renderCodes()"></select><div class="notice">The QR code stores the product ID and name. The barcode represents the product code.</div><button class="btn" onclick="downloadQR()">Download QR</button> <button class="btn" onclick="downloadBarcode()">Download barcode</button></div><div class="card"><h2>Product QR code</h2><div id="qrArea"></div><h2 style="text-align:center">Product barcode</h2><div id="barcodeArea"><svg id="barcode"></svg></div><p id="codeCaption" class="muted" style="text-align:center"></p></div></div>
+ </section>
+ <p class="footer-note">STOCKWISE • Smart Inventory & Stock Optimization • Demo data is stored in this browser only.</p>
+</main>
+</div>
+<div id="modalBack" class="modal-back"><div class="modal"><div class="modal-head"><h2 id="modalTitle">Add product</h2><button class="btn small" onclick="closeModal()">✕</button></div>
+ <div class="form-grid">
+  <div><label>Product ID / SKU *</label><input id="pCode" placeholder="e.g. SKU-101"></div><div><label>Product name *</label><input id="pName" placeholder="e.g. Notebook"></div>
+  <div><label>Category</label><input id="pCategory" placeholder="e.g. Stationery"></div><div><label>Unit cost (₹)</label><input id="pCost" type="number" min="0" step=".01" placeholder="0"></div>
+  <div><label>Opening quantity</label><input id="pQty" type="number" min="0" placeholder="0"></div><div><label>Minimum stock level</label><input id="pMin" type="number" min="0" placeholder="5"></div>
+  <div class="full"><label>Supplier (optional)</label><input id="pSupplier" placeholder="Supplier name"></div>
+ </div><p id="productError" style="color:#b54747;font-size:12px"></p><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="saveProduct()">Save product</button></div>
+</div></div>
+<script>
+const DEMO_PIN="1234"; // Change this demo PIN before your presentation.
+const KEY="stockwise_admin_v1";
+let products=[],transactions=[],editingId=null,charts={};
+const money=n=>"₹"+Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2});
+const today=()=>new Date().toISOString().slice(0,10);
+function seed(){return {products:[
+{id:"p1",code:"SKU-101",name:"A4 Notebook",category:"Stationery",cost:45,qty:120,min:30,supplier:"ABC Traders"},
+{id:"p2",code:"SKU-102",name:"Blue Pen",category:"Stationery",cost:10,qty:18,min:25,supplier:"Prime Supplies"},
+{id:"p3",code:"SKU-201",name:"USB Cable",category:"Electronics",cost:120,qty:45,min:15,supplier:"Global Traders"},
+{id:"p4",code:"SKU-202",name:"Wireless Mouse",category:"Electronics",cost:380,qty:8,min:10,supplier:"Global Traders"},
+{id:"p5",code:"SKU-301",name:"Water Bottle",category:"Accessories",cost:150,qty:65,min:20,supplier:"ABC Traders"},
+{id:"p6",code:"SKU-302",name:"Desk Organizer",category:"Accessories",cost:210,qty:0,min:8,supplier:"Prime Supplies"}],
+transactions:[
+{date:shiftDate(-6),productId:"p1",type:"out",qty:12,ref:"INV-001"},{date:shiftDate(-5),productId:"p2",type:"out",qty:9,ref:"INV-002"},
+{date:shiftDate(-4),productId:"p3",type:"out",qty:5,ref:"INV-003"},{date:shiftDate(-3),productId:"p1",type:"out",qty:8,ref:"INV-004"},
+{date:shiftDate(-2),productId:"p4",type:"out",qty:4,ref:"INV-005"},{date:shiftDate(-1),productId:"p2",type:"out",qty:7,ref:"INV-006"},
+{date:today(),productId:"p1",type:"in",qty:20,ref:"PO-101"}]}}
+function shiftDate(d){let x=new Date();x.setDate(x.getDate()+d);return x.toISOString().slice(0,10)}
+function persist(){localStorage.setItem(KEY,JSON.stringify({products,transactions}))}
+function load(){let d;try{d=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(d&&Array.isArray(d.products)){products=d.products;transactions=d.transactions||[]}else{d=seed();products=d.products;transactions=d.transactions;persist()}}
+function login(){if(document.getElementById("pinInput").value===DEMO_PIN){load();document.getElementById("loginScreen").classList.add("hidden");document.getElementById("app").classList.remove("hidden");refreshAll()}else document.getElementById("loginError").textContent="Incorrect PIN. Please try again."}
+function logout(){document.getElementById("app").classList.add("hidden");document.getElementById("loginScreen").classList.remove("hidden");document.getElementById("pinInput").value=""}
+document.getElementById("pinInput").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+function go(page,btn){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(page).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");document.getElementById("crumb").textContent=btn.textContent.trim();if(page==="forecast")renderForecast();if(page==="analytics")renderAnalytics();if(page==="review")renderReview();if(page==="codes")renderCodes()}
+function status(p){return p.qty<=0?"out":p.qty<=p.min?"low":"ok"}
+function statusText(p){return status(p)==="out"?"Out of stock":status(p)==="low"?"Low stock":"Healthy"}
+function refreshAll(){renderDashboard();renderInventory();renderTransactions();fillSelectors();renderForecast();renderAnalytics();renderReview();renderCodes()}
+function renderDashboard(){
+ let value=products.reduce((s,p)=>s+p.qty*p.cost,0),units=products.reduce((s,p)=>s+p.qty,0),low=products.filter(p=>status(p)!=="ok").length;
+ kProducts.textContent=products.length;kValue.textContent=money(value);kLow.textContent=low;kUnits.textContent=units;
+ const cats={};products.forEach(p=>cats[p.category||"Other"]=(cats[p.category||"Other"]||0)+p.qty*p.cost);
+ makeChart("categoryChart","doughnut",Object.keys(cats),[{label:"Stock value",data:Object.values(cats)}]);
+ const counts={Healthy:products.filter(p=>status(p)==="ok").length,Low:products.filter(p=>status(p)==="low").length,Empty:products.filter(p=>status(p)==="out").length};
+ makeChart("healthChart","doughnut",Object.keys(counts),[{label:"Products",data:Object.values(counts)}]);
+ const alerts=products.filter(p=>status(p)!=="ok").map(p=>`<div class="alert"><b>${esc(p.name)}</b> — ${p.qty} units available; minimum is ${p.min}. ${p.qty===0?"Restock required.":"Review replenishment."}</div>`).join("");
+ dashboardAlerts.innerHTML=alerts||'<div class="notice">All products are currently above their minimum stock level.</div>';
+}
+function renderInventory(){let q=(searchBox.value||"").toLowerCase(),f=stockFilter.value;let arr=products.filter(p=>(p.name+" "+p.code+" "+p.category).toLowerCase().includes(q)&&(f==="all"||(f==="low"&&status(p)==="low")||(f==="out"&&status(p)==="out")||(f==="healthy"&&status(p)==="ok")));
+ productRows.innerHTML=arr.length?arr.map(p=>`<tr><td><strong>${esc(p.name)}</strong><br><span class="muted">${esc(p.supplier||"")}</span></td><td>${esc(p.code)}</td><td>${esc(p.category||"—")}</td><td>${p.qty}</td><td>${p.min}</td><td>${money(p.cost)}</td><td>${money(p.qty*p.cost)}</td><td><span class="status ${status(p)}">${statusText(p)}</span></td><td><button class="btn small" onclick="openProduct('${p.id}')">Edit</button> <button class="btn small danger" onclick="deleteProduct('${p.id}')">Delete</button></td></tr>`).join(""):'<tr><td colspan="9" class="empty">No products found. Add a product to get started.</td></tr>'}
+function openProduct(id){editingId=id||null;let p=products.find(x=>x.id===id);modalTitle.textContent=p?"Edit product":"Add product";pCode.value=p?.code||"";pName.value=p?.name||"";pCategory.value=p?.category||"";pCost.value=p?.cost??"";pQty.value=p?.qty??0;pMin.value=p?.min??5;pSupplier.value=p?.supplier||"";productError.textContent="";modalBack.classList.add("show")}
+function closeModal(){modalBack.classList.remove("show")}
+function saveProduct(){let code=pCode.value.trim(),name=pName.value.trim(),qty=Number(pQty.value),cost=Number(pCost.value),min=Number(pMin.value);if(!code||!name){productError.textContent="Product ID and product name are required.";return}if([qty,cost,min].some(x=>!Number.isFinite(x)||x<0)){productError.textContent="Enter valid non-negative numbers.";return}if(products.some(p=>p.code.toLowerCase()===code.toLowerCase()&&p.id!==editingId)){productError.textContent="That product ID already exists.";return}
+ let data={code,name,category:pCategory.value.trim()||"Other",cost,qty,min,supplier:pSupplier.value.trim()};if(editingId){let old=products.find(p=>p.id===editingId);Object.assign(old,data)}else{let id="p"+Date.now();products.push({id,...data});if(qty>0)transactions.unshift({date:today(),productId:id,type:"in",qty,ref:"Opening stock"})}persist();closeModal();refreshAll()}
+function deleteProduct(id){let p=products.find(x=>x.id===id);if(!confirm(`Delete ${p.name}? Its transaction history will remain.`))return;products=products.filter(x=>x.id!==id);persist();refreshAll()}
+function fillSelectors(){let opts=products.map(p=>`<option value="${p.id}">${esc(p.name)} (${esc(p.code)})</option>`).join("");[txProduct,forecastProduct,codeProduct].forEach(s=>{let old=s.value;s.innerHTML=opts||'<option value="">No products</option>';if(products.some(p=>p.id===old))s.value=old})}
+function recordMovement(){let p=products.find(x=>x.id===txProduct.value),type=txType.value,qty=Number(txQty.value);if(!p){txMessage.textContent="Please add a product first.";return}if(!Number.isInteger(qty)||qty<=0){txMessage.textContent="Enter a whole quantity greater than zero.";return}if(type==="out"&&qty>p.qty){txMessage.textContent="Not enough stock available. Current quantity: "+p.qty;return}p.qty+=type==="in"?qty:-qty;transactions.unshift({date:today(),productId:p.id,type,qty,ref:txRef.value.trim()||"—"});persist();txQty.value="";txRef.value="";txMessage.textContent="Movement saved and inventory updated.";refreshAll()}
+function renderTransactions(){let ins=transactions.filter(t=>t.type==="in").reduce((s,t)=>s+t.qty,0),outs=transactions.filter(t=>t.type==="out").reduce((s,t)=>s+t.qty,0);sumIn.textContent=ins;sumOut.textContent=outs;sumTx.textContent=transactions.length;txRows.innerHTML=transactions.length?transactions.slice(0,100).map(t=>{let p=products.find(x=>x.id===t.productId);return `<tr><td>${t.date}</td><td>${esc(p?.name||"Deleted product")}</td><td><span class="status ${t.type==="in"?"ok":"low"}">${t.type.toUpperCase()}</span></td><td>${t.qty}</td><td>${esc(t.ref||"—")}</td></tr>`}).join(""):'<tr><td colspan="5" class="empty">No stock movement recorded.</td></tr>'}
+function demandFor(p){let rows=transactions.filter(t=>t.productId===p.id&&t.type==="out"),daily=Array(7).fill(0);rows.forEach(t=>{let age=Math.floor((new Date(today())-new Date(t.date))/86400000);if(age>=0&&age<7)daily[6-age]+=t.qty});let total=daily.reduce((a,b)=>a+b,0),avg=total/7;return {daily,total,avg,weekly:avg*7}}
+function renderForecast(){if(!products.length){forecastInsight.innerHTML="Add products to see estimates.";return}let p=products.find(x=>x.id===forecastProduct.value)||products[0];if(!p)return;let d=demandFor(p),days=["6d ago","5d ago","4d ago","3d ago","2d ago","Yesterday","Today"];makeChart("forecastChart","bar",days,[{label:"Stock-out units",data:d.daily}]);let daysLeft=d.avg>0?Math.floor(p.qty/d.avg):null,rop=Math.ceil(d.weekly*1.2);forecastInsight.innerHTML=`<div class="kpi-label">Selected product</div><h2 style="margin:5px 0 15px">${esc(p.name)}</h2><div class="grid three"><div><div class="kpi-label">7-day issued</div><div class="kpi-value">${d.total}</div></div><div><div class="kpi-label">Daily average</div><div class="kpi-value">${d.avg.toFixed(1)}</div></div><div><div class="kpi-label">Current stock</div><div class="kpi-value">${p.qty}</div></div></div><div class="notice"><b>Suggested reorder trigger:</b> approximately ${rop} units (7-day demand plus 20% buffer).<br><b>Estimated stock cover:</b> ${daysLeft===null?"Not enough movement data":daysLeft+" days at recent average"}.</div><p class="muted">Recommendation: ${p.qty<=rop?"Review a replenishment order soon.":"Current stock appears sufficient against this short-term estimate."}</p><p class="muted">Method: 7-day simple average of recorded stock-out entries. This is a basic baseline forecast.</p>`}
+function renderAnalytics(){let sorted=[...products].sort((a,b)=>b.qty*b.cost-a.qty*a.cost),top=sorted.slice(0,7);makeChart("valueChart","bar",top.map(p=>p.name),[{label:"Value (₹)",data:top.map(p=>p.qty*p.cost)}]);let total=sorted.reduce((s,p)=>s+p.qty*p.cost,0),cum=0,abc={A:0,B:0,C:0};sorted.forEach(p=>{cum+=p.qty*p.cost;let share=total?cum/total:1;abc[share<=.8?"A":share<=.95?"B":"C"]++});makeChart("abcChart","doughnut",["A • high value","B • medium value","C • lower value"],[{label:"Products",data:[abc.A,abc.B,abc.C]}]);
+ let decisions=[];products.forEach(p=>{let d=demandFor(p);if(status(p)!=="ok")decisions.push(`<div class="alert"><b>Replenishment:</b> ${esc(p.name)} has ${p.qty} units against minimum ${p.min}. Consider checking supplier lead time.</div>`);if(d.total===0)decisions.push(`<div class="notice"><b>Movement check:</b> No stock-out entries for ${esc(p.name)} in the last 7 days. Verify whether it is slow-moving or simply has no recent sales.</div>`);if(d.total>0&&p.qty<d.weekly*1.2)decisions.push(`<div class="alert"><b>Demand signal:</b> ${esc(p.name)} has less than an estimated 1.2 weeks of recent demand in stock.</div>`)});decisionList.innerHTML=decisions.join("")||'<div class="notice">No immediate decision flags based on current data.</div>'}
+function renderReview(){let value=products.reduce((s,p)=>s+p.qty*p.cost,0),units=products.reduce((s,p)=>s+p.qty,0),low=products.filter(p=>status(p)!=="ok"),demand=transactions.filter(t=>t.type==="out").reduce((s,t)=>s+t.qty,0);reviewContent.innerHTML=`<div class="grid kpis"><div class="card"><div class="kpi-label">Products tracked</div><div class="kpi-value">${products.length}</div></div><div class="card"><div class="kpi-label">Stock units</div><div class="kpi-value">${units}</div></div><div class="card"><div class="kpi-label">Inventory value</div><div class="kpi-value">${money(value)}</div></div><div class="card"><div class="kpi-label">Recorded stock-out</div><div class="kpi-value">${demand}</div></div></div><div class="card"><h2>Administrator summary</h2><p>${products.length?`The system currently tracks ${products.length} products with a combined stock value of ${money(value)}.`:"No products have been added yet."} ${low.length} product(s) need stock attention. ${transactions.length} stock movement record(s) are available for review.</p><h3>Priority actions</h3>${low.length?low.map(p=>`<div class="alert"><b>${esc(p.name)}</b>: ${p.qty} available; minimum level ${p.min}. ${p.qty===0?"Currently out of stock.":"Below or equal to minimum stock."}</div>`).join(""):'<div class="notice">No low-stock products at this time.</div>'}<p class="muted">Review basis: live product records, recorded stock movements, unit costs and minimum stock levels. Forecasts depend on the quality and amount of transaction history.</p></div>`}
+function makeChart(id,type,labels,datasets){let el=document.getElementById(id);if(!el)return;if(charts[id])charts[id].destroy();charts[id]=new Chart(el,{type,data:{labels,datasets:datasets.map((d,i)=>({...d,backgroundColor:type==="line"?"#31577f":["#203d61","#7890aa","#b7c4d2","#aab6c3","#d4dce5"],borderColor:"#203d61",borderWidth:1,borderRadius:type==="bar"?4:0,tension:.3}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type!=="bar"||datasets.length>1,position:"bottom"}},scales:type==="bar"?{y:{beginAtZero:true,grid:{color:"#edf0f4"}},x:{grid:{display:false}}}:{}}})}
+function renderCodes(){let p=products.find(x=>x.id===codeProduct.value)||products[0];qrArea.innerHTML="";if(!p){codeCaption.textContent="Add a product first.";return}let payload=JSON.stringify({system:"STOCKWISE",productId:p.id,sku:p.code,name:p.name});if(window.QRCode)new QRCode(qrArea,{text:payload,width:170,height:170,colorDark:"#142b4a",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});if(window.JsBarcode)JsBarcode("#barcode",p.code,{format:"CODE128",lineColor:"#142b4a",width:2,height:58,displayValue:true, fontSize:13,margin:5});codeCaption.textContent=p.name+" • "+p.code}
+function downloadQR(){let img=qrArea.querySelector("img"),canvas=qrArea.querySelector("canvas");let url=img?.src||(canvas?canvas.toDataURL("image/png"):null);if(!url){alert("QR code is not ready.");return}downloadData(url,"stockwise-"+codeProduct.value+"-qr.png")}
+function downloadBarcode(){let svg=document.getElementById("barcode");let blob=new Blob([new XMLSerializer().serializeToString(svg)],{type:"image/svg+xml"});let url=URL.createObjectURL(blob);let a=document.createElement("a");a.href=url;a.download="stockwise-barcode.svg";a.click();URL.revokeObjectURL(url)}
+function downloadData(url,name){let a=document.createElement("a");a.href=url;a.download=name;a.click()}
+function exportCSV(){let rows=[["Product ID","Name","Category","Quantity","Minimum","Unit Cost","Stock Value","Supplier"],...products.map(p=>[p.code,p.name,p.category,p.qty,p.min,p.cost,p.qty*p.cost,p.supplier])];let csv=rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\n");let url=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));downloadData(url,"stockwise-inventory.csv");URL.revokeObjectURL(url)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+</script>
+</body></html>
